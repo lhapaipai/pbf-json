@@ -1,12 +1,11 @@
-GeoJSON Feature properties stringified in map events
+## Fix GeoJSON Feature properties stringified in map events
 
-```bash
+```console
 npm i
-
 npm run dev
 ```
 
-To facilitate the proof of concept, a copy of the source files from the @mapbox/vector-tile and @maplibre/vt-pbf packages was placed in the src/packages folder.
+To facilitate the proof of concept, a copy of the source files from the `@mapbox/vector-tile` and `@maplibre/vt-pbf` packages was placed in the `src/packages` folder.
 
 Here the detail of modifications
 
@@ -38,6 +37,8 @@ message Tile {
 ```
 
 ## @maplibre/vt-pbf
+
+Compare with [original](https://github.com/maplibre/vt-pbf/blob/main/index.ts#L109-L112)
 
 ```ts
 
@@ -82,9 +83,10 @@ function writeProperties(context: Context, pbf: Pbf) {
     pbf.writeVarint(valueIndex);
   }
 }
+```
 
-
-
+Compare with [original](https://github.com/maplibre/vt-pbf/blob/main/index.ts#L162-L177)
+```ts
 function writeValue(value: string | boolean | number | Record<string, unknown>, pbf: Pbf) {
   const type = typeof value;
   if (type === "string") {
@@ -111,6 +113,8 @@ function writeValue(value: string | boolean | number | Record<string, unknown>, 
 
 
 ## @mapbox/vector-tile
+
+Compare with [original](https://github.com/mapbox/vector-tile-js/blob/main/index.js#L352-L358)
 
 ```ts
 /**
