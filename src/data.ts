@@ -31,8 +31,8 @@ export const collection: FeatureCollection = {
   type: "FeatureCollection",
   features: [
     {
-      id: 74,
-      // id: "coucou",
+      // id: 74,
+      id: "id-as-string",
       type: "Feature",
       properties: {
         hello: "world",

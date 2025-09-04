@@ -32,7 +32,12 @@ class FeatureWrapper extends VectorTileFeature {
     // that causes an exception when it is parsed with vector-tile-js
     if ("id" in feature) {
       if (typeof feature.id === "string") {
-        this.id = parseInt(feature.id, 10);
+        const idAsNumber = parseInt(feature.id, 10);
+        if (!isNaN(idAsNumber)) {
+          this.id = idAsNumber;
+        } else {
+          this.id = feature.id;
+        }
       } else if (
         typeof feature.id === "number" &&
         !isNaN(feature.id as number)

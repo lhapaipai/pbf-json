@@ -210,12 +210,32 @@ VectorTileFeature.types = ["Unknown", "Point", "LineString", "Polygon"];
  * @param {Pbf} pbf
  */
 function readFeature(tag, feature, pbf) {
-  if (tag === 1) feature.id = pbf.readVarint();
+  if (tag === 1) readId(pbf, feature);
   else if (tag === 2) readTag(pbf, feature);
   else if (tag === 3)
     feature.type = /** @type {0 | 1 | 2 | 3} */ (pbf.readVarint());
   // @ts-expect-error TS2341 deliberately accessing a private property
   else if (tag === 4) feature._geometry = pbf.pos;
+}
+
+function readId(pbf, feature) {
+  // feature.id = pbf.readVarint()
+
+  let id = null;
+  const end = pbf.readVarint() + pbf.pos;
+
+  while (pbf.pos < end) {
+    const tag = pbf.readVarint() >> 3;
+
+    // change:begin
+    id = tag === 1 ? pbf.readString() : tag === 2 ? pbf.readVarint() : null;
+    // change:end
+  }
+  if (id == null) {
+    throw new Error("unknown feature id");
+  }
+
+  feature.id = id;
 }
 
 /**
@@ -355,10 +375,7 @@ function readValueMessage(pbf) {
 
     // change:begin
     value =
-      tag === 0
-        ? JSON.parse(pbf.readString())
-        : // change:end
-        tag === 1
+      tag === 1
         ? pbf.readString()
         : tag === 2
         ? pbf.readFloat()
@@ -372,7 +389,10 @@ function readValueMessage(pbf) {
         ? pbf.readSVarint()
         : tag === 7
         ? pbf.readBoolean()
+        : tag === 8
+        ? JSON.parse(pbf.readString())
         : null;
+    // change:end
   }
   if (value == null) {
     throw new Error("unknown feature value");

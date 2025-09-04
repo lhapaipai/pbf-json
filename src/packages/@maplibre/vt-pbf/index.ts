@@ -95,12 +95,21 @@ function writeFeature(context: Context, pbf: Pbf) {
   const feature = context.feature;
 
   if (feature.id !== undefined) {
-    pbf.writeVarintField(1, feature.id);
+    pbf.writeMessage(1, writeId, feature.id);
+    // pbf.writeVarintField(1, feature.id);
   }
 
   pbf.writeMessage(2, writeProperties, context);
   pbf.writeVarintField(3, feature.type);
   pbf.writeMessage(4, writeGeometry, feature);
+}
+
+function writeId(id: string | number, pbf: Pbf) {
+  if (typeof id === "number") {
+    pbf.writeVarintField(2, id);
+  } else {
+    pbf.writeStringField(1, id);
+  }
 }
 
 function writeProperties(context: Context, pbf: Pbf) {
@@ -196,7 +205,7 @@ function writeValue(value: string | boolean | number, pbf: Pbf) {
     }
     // change:begin
   } else {
-    pbf.writeStringField(0, JSON.stringify(value as string));
+    pbf.writeStringField(8, JSON.stringify(value as string));
   }
   // change:end
 }
